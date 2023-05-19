@@ -97,7 +97,8 @@ cars
 plot(cars)
 ```
 
-#Challenge1-analyzing the sales by state
+# Tidyverse Challenge
+
 ```{r plot, fig.width=10, fig.height=7}
 #----1.libraries----
 library(tidyverse)
@@ -140,6 +141,7 @@ select(order.id,contains("order"),contains("model"),contains("category"),
 #Renaming columns
 rename(bikeshop = name) %>%
 set_names(names(.) %>% str_replace_all("\\.", "_"))
+
 #6.2.Sales by location----
 ##Step1-Manipulate----
 bike_orderlines_tbl <- bike_orderlines_wrangled_tbl %>%
@@ -163,11 +165,6 @@ geom_label(aes(label = sales_text), nudge_y = 1000) +
 scale_y_continuous(labels = scales::dollar_format(big.mark = ".", decimal.mark = ",", prefix = "", suffix = " €")) +
 labs(title = "Revenue by State", subtitle = "Total Sales", x = "State", y = "Revenue") +
 theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-```
-
-#Challenge2-analyzing the sales by state and year
-```{r plot, fig.width=10, fig.height=7}
 #6.3.Sales by location and year----
 ##Step1-Manipulate----
 bike_orderlines_tbl <- bike_orderlines_wrangled_tbl %>%
@@ -192,5 +189,8 @@ scale_y_continuous(labels=scales::dollar_format(big.mark = ".", decimal.mark = "
 labs(title="Revenue by State and Year", subtitle="Total Sales", x="Year", y="Revenue") +
 facet_wrap(~state, ncol=4) +
 theme(axis.text.x=element_text(angle=45,hjust=1))
+
+```
+
 
 ```
