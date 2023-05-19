@@ -97,7 +97,8 @@ cars
 plot(cars)
 ```
 
-```{r}
+#Challenge1-analyzing the sales by state
+```{r plot, fig.width=10, fig.height=7}
 #----1.libraries----
 library(tidyverse)
 library(readxl)
@@ -118,8 +119,8 @@ glimpse(orderlines_tbl)
 
 ##----4.joining data----
 bike_orderlines_joined_tbl <- orderlines_tbl %>%
-  left_join(bikes_tbl,by=c("product.id" = "bike.id")) %>%
-  left_join(bikeshops_tbl,by=c("customer.id" = "bikeshop.id"))
+left_join(bikes_tbl,by=c("product.id" = "bike.id")) %>%
+left_join(bikeshops_tbl,by=c("customer.id" = "bikeshop.id"))
 
 ##---5.Wrangling Data----
 bike_orderlines_wrangled_tbl <- bike_orderlines_joined_tbl %>%
@@ -139,8 +140,6 @@ select(order.id,contains("order"),contains("model"),contains("category"),
 #Renaming columns
 rename(bikeshop = name) %>%
 set_names(names(.) %>% str_replace_all("\\.", "_"))
-glimpse(bike_orderlines_wrangled_tbl)
-
 #6.2.Sales by location----
 ##Step1-Manipulate----
 bike_orderlines_tbl <- bike_orderlines_wrangled_tbl %>%
@@ -164,5 +163,34 @@ geom_label(aes(label = sales_text), nudge_y = 1000) +
 scale_y_continuous(labels = scales::dollar_format(big.mark = ".", decimal.mark = ",", prefix = "", suffix = " €")) +
 labs(title = "Revenue by State", subtitle = "Total Sales", x = "State", y = "Revenue") +
 theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+#Challenge2-analyzing the sales by state and year
+```{r plot, fig.width=10, fig.height=7}
+#6.3.Sales by location and year----
+##Step1-Manipulate----
+bike_orderlines_tbl <- bike_orderlines_wrangled_tbl %>%
+#Separating location into state and city
+separate(location,into=c("city","state"),sep = ", ") %>%
+#Extracting year from order_date
+mutate(year=year(order_date)) %>%
+#Selecting columns
+select(year,state,total_price) %>%
+#Grouping by year and state, and summarizing sales
+group_by(year,state) %>%
+summarize(sales=sum(total_price)) %>%
+ungroup() %>%
+#Adding a column for currency format 
+mutate(sales_text = scales::dollar(sales,big.mark=".",decimal.mark=",",prefix="",suffix =" €"))
+##Step2-Visualize----
+bike_orderlines_tbl %>%
+ggplot(aes(x=year, y=sales, fill=state)) +
+geom_col() +
+geom_label(aes(label=sales_text), color="white", size=2) +
+scale_y_continuous(labels=scales::dollar_format(big.mark = ".", decimal.mark = ",", prefix = "", suffix = " €")) +
+labs(title="Revenue by State and Year", subtitle="Total Sales", x="Year", y="Revenue") +
+facet_wrap(~state, ncol=4) +
+theme(axis.text.x=element_text(angle=45,hjust=1))
 
 ```
