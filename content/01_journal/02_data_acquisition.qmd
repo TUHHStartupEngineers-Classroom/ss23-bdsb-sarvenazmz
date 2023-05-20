@@ -1,8 +1,123 @@
 ---
 title: "Data Acquisition"
-author: "Joschka Schwarz"
+author: "Sarvenaz Mostafazadeh"
 ---
 
-::: callout-note
-You can delete everything in here and start fresh.
-:::
+# Data Acquisition Challenge-1
+
+```{r plot, fig.width=10, fig.height=7}
+##----1.libraries----
+library(rvest)
+library(tibble)
+library(httr)
+library(ggplot2)
+
+##----2.Sending a GET request to the website and extract its HTML content----
+url <- "https://www.boxofficemojo.com/year/world/2022/"
+resp <- GET(url)
+html <- content(resp)
+
+##----3.Top 10 Movies by Sales-2022----
+
+#3.1.Getting the rank of the movies----
+rank <- html %>% 
+  html_nodes(".a-text-right.mojo-header-column.mojo-truncate.mojo-field-type-rank.mojo-sort-column") %>% 
+  html_text() %>% 
+  as.numeric()
+
+#3.2.Getting the title of the movies----
+title <- html %>% 
+  html_nodes(".a-text-left.mojo-field-type-release_group a") %>% 
+  html_text()
+
+#3.3.Getting the number of sales of the movies----
+sale <- html %>%
+  html_nodes("td.a-text-right.mojo-field-type-money") %>%
+  html_text() 
+
+#3.4.creating a tibble----
+movie_tbl <- tibble(
+  rank = rank[1:10], 
+  title = title[1:10], 
+  sale = sale[1:10])
+
+#3.5.Printing the resulting tibble----
+movie_tbl
+
+#3.6.Create a bar plot for the sales----
+ggplot(movie_tbl, aes(x = title, y = sale)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(x = "Movie Title", y = "Sales") +
+  ggtitle("Top 10 Movies by Sales (2022)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+# Data Acquisition Challenge-2
+
+```{r}
+
+##----.Libraries
+library(tidyverse)
+library(rvest)
+
+##----1.Read in the HTML for the entire webpage of the "bikes" section----
+html_family <- read_html("https://www.rosebikes.com/bikes/")
+
+#1.1.Web scrape the URLs for each bike family
+bike_family_tbl <- html_family %>%
+  html_nodes(css = ".catalog-navigation__list .catalog-navigation__list-item .catalog-navigation__link") %>%
+  html_attr("href") %>%
+  str_replace_all("^/", "https://www.rosebikes.com/") %>%
+  as_tibble() %>%
+  rename(URL = value)
+
+#1.2.Print the tibble of the URLs
+bike_family_tbl
+
+##----2.Read in the HTML for the entire webpage of the "family" section----
+bike_subfamily_url <- bike_family_tbl$URL[2]
+html_subfamily <- read_html(bike_subfamily_url)
+
+#2.1.Web scrape the URLs for "Road" bike subfamily
+bike_subfamily_tbl <- html_subfamily %>%
+  html_nodes(css = ".catalog-category-bikes__picture-wrapper.columns.small-12.medium-6.mediumlarge-7.large-8.catalog-category-bikes__picture-wrapper--left") %>%
+  html_attr("href") %>%
+  {glue("https://www.rosebikes.com{.}")} %>%
+  as_tibble() %>%
+  rename(URL = value)
+
+#2.2.Print the tibble of the URLs
+bike_subfamily_tbl
+
+##----3.Read in the HTML for the entire webpage of the "xlite" category section----
+bike_category_url <- bike_subfamily_tbl$URL[1]
+html_category <- read_html(bike_category_url)
+
+#3.1.Extract bike name of "xlite" category
+name <- html_category %>%
+  html_nodes(css = ".basic-headline.basic-headline--no-margin.basic-headline--small.basic-headline--left .basic-headline__title") %>%
+  html_text() 
+
+#3.2.Extract bike price of "xlite" category and remove non-numeric characters
+price <- html_category %>%
+  html_nodes(css = ".product-tile-price__current.catalog-category-model__price-current .product-tile-price__current-value.catalog-category-model__price-current-value") %>%
+  html_text() %>%
+  gsub("[^0-9.]", "", .) # remove non-numeric characters
+
+#3.3.Create tibble of the bikes in "xlite" category and format the price
+bike_category_tbl <- tibble(name = name, price = glue("{gsub(',', '', gsub('€', '', price))}"))
+
+#3.4.Print tibble
+bike_category_tbl
+
+```
+
+
+
+
+
+
+
+
+

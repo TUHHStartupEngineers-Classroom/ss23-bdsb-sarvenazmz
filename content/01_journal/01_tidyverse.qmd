@@ -97,7 +97,7 @@ cars
 plot(cars)
 ```
 
-# Tidyverse Challenge
+# Tidyverse Challenge-1
 
 ```{r plot, fig.width=10, fig.height=7}
 #----1.libraries----
@@ -165,7 +165,56 @@ geom_label(aes(label = sales_text), nudge_y = 1000) +
 scale_y_continuous(labels = scales::dollar_format(big.mark = ".", decimal.mark = ",", prefix = "", suffix = " €")) +
 labs(title = "Revenue by State", subtitle = "Total Sales", x = "State", y = "Revenue") +
 theme(axis.text.x = element_text(angle = 45, hjust = 1))
-#6.3.Sales by location and year----
+
+```
+
+
+# Tidyverse Challenge-2
+
+```{r plots, fig.width=10, fig.height=7}
+#----1.libraries----
+library(tidyverse)
+library(readxl)
+
+# ----2.Importing files----
+#reading file
+bikes_path <- "C:/Users/mosta/Desktop/1/ds_data/01_bike_sales/01_raw_data/bikes.xlsx"
+bikeshops_path <- "C:/Users/mosta/Desktop/1/ds_data/01_bike_sales/01_raw_data/bikeshops.xlsx"
+orderlines_path <- "C:/Users/mosta/Desktop/1/ds_data/01_bike_sales/01_raw_data/orderlines.xlsx"
+
+#Import the excel files
+bikes_tbl <- read_excel(bikes_path)
+bikeshops_tbl <- read_excel(bikeshops_path)
+orderlines_tbl <- read_excel(orderlines_path)
+
+##----3.Examining data
+glimpse(orderlines_tbl)
+
+##----4.joining data----
+bike_orderlines_joined_tbl <- orderlines_tbl %>%
+left_join(bikes_tbl,by=c("product.id" = "bike.id")) %>%
+left_join(bikeshops_tbl,by=c("customer.id" = "bikeshop.id"))
+
+##---5.Wrangling Data----
+bike_orderlines_wrangled_tbl <- bike_orderlines_joined_tbl %>%
+  
+##----6.Business insights----
+
+#6.1.Total sales by category----
+#Separate category name
+separate(col=category,into=c("category.1", "category.2", "category.3"),sep=" - ") %>%
+#Add the total price (price * quantity) 
+mutate(total.price=price*quantity) %>%
+#Eliminating the unnecessary columns
+select(-rownumber,-gender) %>%
+#Reordering the data by selecting the columns in the desired order
+select(order.id,contains("order"),contains("model"),contains("category"),
+         price,quantity,total.price,everything()) %>%
+#Renaming columns
+rename(bikeshop = name) %>%
+set_names(names(.) %>% str_replace_all("\\.", "_"))
+
+#6.2.Sales by location and year----
 ##Step1-Manipulate----
 bike_orderlines_tbl <- bike_orderlines_wrangled_tbl %>%
 #Separating location into state and city
@@ -189,8 +238,5 @@ scale_y_continuous(labels=scales::dollar_format(big.mark = ".", decimal.mark = "
 labs(title="Revenue by State and Year", subtitle="Total Sales", x="Year", y="Revenue") +
 facet_wrap(~state, ncol=4) +
 theme(axis.text.x=element_text(angle=45,hjust=1))
-
-```
-
 
 ```
