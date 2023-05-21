@@ -82,6 +82,7 @@ top_10_companies
 # Data Wrangling Challenge-3
 
 ```{r}
+##3
 ##----.libraries----
 library(data.table)
 library(dplyr)
@@ -105,6 +106,7 @@ combined_data <- merge(patent_assignee_data, assignee_data, by.x = "assignee_id"
 
 ##----6.Count the number of patents granted to each company worldwide----
 company_patents <- combined_data %>%
+filter(!(is.na(organization))) %>%
 group_by(organization) %>%
 summarize(patent_count = n()) %>%
 ungroup() %>%
@@ -112,6 +114,7 @@ arrange(desc(patent_count))
 
 ##----7.Get the top 10 companies with the most patents----
 top_10_companies <- head(company_patents, 10)$organization
+top_10_companies
 
 ##----8.Filter the combined_data for the top 10 companies----
 filtered_data <- combined_data[organization %in% top_10_companies]

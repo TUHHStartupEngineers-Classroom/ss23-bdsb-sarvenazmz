@@ -137,9 +137,7 @@ ungroup() %>%
 mutate(sales_text = scales::dollar(sales,big.mark=".",decimal.mark=",",prefix="",suffix =" €"))
 ##Step2-Visualize----
 bike_orderlines_tbl %>%
-ggplot(aes(x=year, y=sales, fill=state)) +
-geom_col() +
-geom_label(aes(label=sales_text), color="white", size=2) +
+ggplot(aes(x=year, y=sales, fill=state)) + geom_col() +
 scale_y_continuous(labels=scales::dollar_format(big.mark = ".", decimal.mark = ",", prefix = "", suffix = " €")) +
 labs(title="Revenue by State and Year", subtitle="Total Sales", x="Year", y="Revenue") +
 facet_wrap(~state, ncol=4) +
