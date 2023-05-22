@@ -215,16 +215,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header><section id="data-visualization-challenge-1" class="level1" data-number="1"><h1 data-number="1">
 <span class="header-section-number">1</span> Data Visualization Challenge-1</h1>
-<div class="cell" data-hash="04_data_visualization_cache/html/plot_842c154af7b66961d8d240c7d989eb28">
+<div class="cell" data-hash="04_data_visualization_cache/html/plot_347cc2d022f21e8411941c1e19b6ff16">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="do">##----.libraries----</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-3"><a href="#cb1-3"></a><span class="fu">library</span>(lubridate)</span>
 <span id="cb1-4"><a href="#cb1-4"></a><span class="fu">library</span>(scales)</span>
 <span id="cb1-5"><a href="#cb1-5"></a></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="do">##----1.Read the COVID-19 data----</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="do">##----1.Read the data----</span></span>
 <span id="cb1-7"><a href="#cb1-7"></a>covid_data_tbl <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://covid.ourworldindata.org/data/owid-covid-data.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>#&gt; Rows: 311396 Columns: 67
+<pre><code>#&gt; Rows: 311447 Columns: 67
 #&gt; ── Column specification ────────────────────────────────────────────────────────
 #&gt; Delimiter: ","
 #&gt; chr   (4): iso_code, continent, location, tests_units
@@ -234,57 +234,58 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 #&gt; ℹ Use `spec()` to retrieve the full column specification for this data.
 #&gt; ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="do">##----2.Filter data for the selected countries----</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>selected_countries <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Germany"</span>, <span class="st">"United Kingdom"</span>, <span class="st">"France"</span>, <span class="st">"Spain"</span>, <span class="st">"United States"</span>)</span>
-<span id="cb3-3"><a href="#cb3-3"></a>filtered_data <span class="ot">&lt;-</span> covid_data_tbl <span class="sc">%&gt;%</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a>  <span class="fu">filter</span>(location <span class="sc">%in%</span> selected_countries)</span>
-<span id="cb3-5"><a href="#cb3-5"></a></span>
-<span id="cb3-6"><a href="#cb3-6"></a><span class="do">##----3.Convert the date column to the appropriate format----</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a>filtered_data<span class="sc">$</span>date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(filtered_data<span class="sc">$</span>date, <span class="at">format =</span> <span class="st">"%Y-%m-%d"</span>)</span>
-<span id="cb3-8"><a href="#cb3-8"></a></span>
-<span id="cb3-9"><a href="#cb3-9"></a><span class="do">##----4.Filter data until April 19, 2022----</span></span>
-<span id="cb3-10"><a href="#cb3-10"></a>filtered_data <span class="ot">&lt;-</span> filtered_data <span class="sc">%&gt;%</span></span>
-<span id="cb3-11"><a href="#cb3-11"></a>  <span class="fu">filter</span>(date <span class="sc">&lt;=</span> <span class="fu">ymd</span>(<span class="st">"2022-04-19"</span>))</span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="do">##----2.Filter data for date and countries----</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>filtered_data <span class="ot">&lt;-</span> covid_data_tbl <span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="fu">filter</span>(location <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Germany"</span>, <span class="st">"United Kingdom"</span>, <span class="st">"France"</span>, <span class="st">"Spain"</span>, <span class="st">"United States"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>  <span class="fu">filter</span>(date <span class="sc">&lt;=</span> <span class="fu">ymd</span>(<span class="st">"2022-04-19"</span>))<span class="sc">%&gt;%</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(total_cases))</span>
+<span id="cb3-6"><a href="#cb3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="do">##----3.Plot----</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Germany"</span> <span class="ot">=</span> <span class="st">"purple"</span>, <span class="st">"United Kingdom"</span> <span class="ot">=</span> <span class="st">"green"</span>, <span class="st">"France"</span> <span class="ot">=</span> <span class="st">"orange"</span>,</span>
+<span id="cb3-9"><a href="#cb3-9"></a>            <span class="st">"Spain"</span> <span class="ot">=</span> <span class="st">"pink"</span>, <span class="st">"United States"</span> <span class="ot">=</span> <span class="st">"yellow"</span>)</span>
+<span id="cb3-10"><a href="#cb3-10"></a></span>
+<span id="cb3-11"><a href="#cb3-11"></a>us_cases <span class="ot">&lt;-</span> <span class="fu">max</span>(filtered_data<span class="sc">$</span>total_cases[filtered_data<span class="sc">$</span>location <span class="sc">==</span> <span class="st">"United States"</span> <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(filtered_data<span class="sc">$</span>total_cases)])</span>
 <span id="cb3-12"><a href="#cb3-12"></a></span>
-<span id="cb3-13"><a href="#cb3-13"></a><span class="do">##----5.Create a month-year column for grouping----</span></span>
-<span id="cb3-14"><a href="#cb3-14"></a>filtered_data<span class="sc">$</span>month_year <span class="ot">&lt;-</span> <span class="fu">format</span>(filtered_data<span class="sc">$</span>date, <span class="st">"%B'%y"</span>)</span>
-<span id="cb3-15"><a href="#cb3-15"></a></span>
-<span id="cb3-16"><a href="#cb3-16"></a><span class="do">##----6.Define the colors for each country----</span></span>
-<span id="cb3-17"><a href="#cb3-17"></a>colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Germany"</span> <span class="ot">=</span> <span class="st">"purple"</span>, <span class="st">"United Kingdom"</span> <span class="ot">=</span> <span class="st">"green"</span>, <span class="st">"France"</span> <span class="ot">=</span> <span class="st">"orange"</span>,</span>
-<span id="cb3-18"><a href="#cb3-18"></a>            <span class="st">"Spain"</span> <span class="ot">=</span> <span class="st">"pink"</span>, <span class="st">"United States"</span> <span class="ot">=</span> <span class="st">"yellow"</span>)</span>
-<span id="cb3-19"><a href="#cb3-19"></a></span>
-<span id="cb3-20"><a href="#cb3-20"></a><span class="do">##----7.Plotting----</span></span>
-<span id="cb3-21"><a href="#cb3-21"></a>us_max_cases <span class="ot">&lt;-</span> <span class="fu">max</span>(filtered_data<span class="sc">$</span>total_cases[filtered_data<span class="sc">$</span>location <span class="sc">==</span> <span class="st">"United States"</span> <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(filtered_data<span class="sc">$</span>total_cases)])</span>
-<span id="cb3-22"><a href="#cb3-22"></a></span>
-<span id="cb3-23"><a href="#cb3-23"></a><span class="fu">ggplot</span>(filtered_data, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> total_cases, <span class="at">color =</span> location)) <span class="sc">+</span></span>
-<span id="cb3-24"><a href="#cb3-24"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb3-25"><a href="#cb3-25"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> colors) <span class="sc">+</span></span>
-<span id="cb3-26"><a href="#cb3-26"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> <span class="st">"Cumulative Cases"</span>, <span class="at">title =</span> <span class="st">"COVID-19 confirmed cases worldwide"</span>, <span class="at">subtitle =</span> <span class="st">"As of 19/04/2022"</span>) <span class="sc">+</span></span>
-<span id="cb3-27"><a href="#cb3-27"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_labels =</span> <span class="st">"%B'%y"</span>, <span class="at">date_breaks =</span> <span class="st">"1 month"</span>) <span class="sc">+</span></span>
-<span id="cb3-28"><a href="#cb3-28"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="cf">function</span>(x) <span class="fu">paste0</span>(<span class="fu">format</span>(x<span class="sc">/</span><span class="fl">1e6</span>, <span class="at">scientific =</span> <span class="cn">FALSE</span>), <span class="st">"M"</span>),</span>
-<span id="cb3-29"><a href="#cb3-29"></a>                     <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">50e6</span>, <span class="fl">100e6</span>, <span class="fl">150e6</span>),</span>
-<span id="cb3-30"><a href="#cb3-30"></a>                     <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">150e6</span>)) <span class="sc">+</span></span>
-<span id="cb3-31"><a href="#cb3-31"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb3-32"><a href="#cb3-32"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
-<span id="cb3-33"><a href="#cb3-33"></a>        <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"darkgrey"</span>)) <span class="sc">+</span></span>
-<span id="cb3-34"><a href="#cb3-34"></a>  <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Country"</span>) <span class="sc">+</span></span>
-<span id="cb3-35"><a href="#cb3-35"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_blank</span>(), </span>
-<span id="cb3-36"><a href="#cb3-36"></a>        <span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span></span>
-<span id="cb3-37"><a href="#cb3-37"></a>  <span class="fu">geom_label</span>(<span class="at">data =</span> filtered_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(location <span class="sc">==</span> <span class="st">"United States"</span> <span class="sc">&amp;</span> total_cases <span class="sc">==</span> us_max_cases),</span>
-<span id="cb3-38"><a href="#cb3-38"></a>             <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> total_cases, </span>
-<span id="cb3-39"><a href="#cb3-39"></a>                 <span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">format</span>(us_max_cases, <span class="at">scientific =</span> <span class="cn">FALSE</span>, <span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>))),</span>
-<span id="cb3-40"><a href="#cb3-40"></a>             <span class="at">fill =</span> <span class="st">"red"</span>, </span>
-<span id="cb3-41"><a href="#cb3-41"></a>             <span class="at">color =</span> <span class="st">"white"</span>,</span>
-<span id="cb3-42"><a href="#cb3-42"></a>             <span class="at">fontface =</span> <span class="st">"bold"</span>,</span>
-<span id="cb3-43"><a href="#cb3-43"></a>             <span class="at">label.padding =</span> <span class="fu">unit</span>(<span class="fl">0.5</span>, <span class="st">"lines"</span>),</span>
-<span id="cb3-44"><a href="#cb3-44"></a>             <span class="at">label.size =</span> <span class="fl">0.15</span>,</span>
-<span id="cb3-45"><a href="#cb3-45"></a>             <span class="at">label.r =</span> <span class="fu">unit</span>(<span class="fl">0.15</span>, <span class="st">"lines"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="fu">ggplot</span>(filtered_data, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> total_cases, <span class="at">color =</span> location)) <span class="sc">+</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> colors) <span class="sc">+</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> <span class="st">"Cumulative Cases"</span>, <span class="at">title =</span> <span class="st">"COVID-19 confirmed cases worldwide"</span>, <span class="at">subtitle =</span> <span class="st">"As of 19/04/2022"</span>) <span class="sc">+</span></span>
+<span id="cb3-17"><a href="#cb3-17"></a>  <span class="fu">scale_x_date</span>(</span>
+<span id="cb3-18"><a href="#cb3-18"></a>    <span class="at">date_labels =</span> <span class="st">"%B'%y"</span>,</span>
+<span id="cb3-19"><a href="#cb3-19"></a>    <span class="at">date_breaks =</span> <span class="st">"1 month"</span>,</span>
+<span id="cb3-20"><a href="#cb3-20"></a>    <span class="at">labels =</span> <span class="cf">function</span>(x) <span class="fu">format</span>(x, <span class="at">format =</span> <span class="st">"%B'%y"</span>)</span>
+<span id="cb3-21"><a href="#cb3-21"></a>  ) <span class="sc">+</span></span>
+<span id="cb3-22"><a href="#cb3-22"></a>  <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb3-23"><a href="#cb3-23"></a>    <span class="at">labels =</span> <span class="cf">function</span>(x) <span class="fu">paste0</span>(<span class="fu">format</span>(x <span class="sc">/</span> <span class="fl">1e6</span>, <span class="at">scientific =</span> <span class="cn">FALSE</span>), <span class="st">"M"</span>),</span>
+<span id="cb3-24"><a href="#cb3-24"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">50e6</span>, <span class="fl">100e6</span>, <span class="fl">150e6</span>),</span>
+<span id="cb3-25"><a href="#cb3-25"></a>    <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">150e6</span>)</span>
+<span id="cb3-26"><a href="#cb3-26"></a>  ) <span class="sc">+</span></span>
+<span id="cb3-27"><a href="#cb3-27"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb3-28"><a href="#cb3-28"></a>  <span class="fu">theme</span>(</span>
+<span id="cb3-29"><a href="#cb3-29"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb3-30"><a href="#cb3-30"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"darkgrey"</span>)</span>
+<span id="cb3-31"><a href="#cb3-31"></a>  ) <span class="sc">+</span></span>
+<span id="cb3-32"><a href="#cb3-32"></a>  <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Country"</span>) <span class="sc">+</span></span>
+<span id="cb3-33"><a href="#cb3-33"></a>  <span class="fu">theme</span>(</span>
+<span id="cb3-34"><a href="#cb3-34"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>),  <span class="co"># Rotate x-axis labels</span></span>
+<span id="cb3-35"><a href="#cb3-35"></a>    <span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb3-36"><a href="#cb3-36"></a>  ) <span class="sc">+</span></span>
+<span id="cb3-37"><a href="#cb3-37"></a>  <span class="fu">geom_label</span>(</span>
+<span id="cb3-38"><a href="#cb3-38"></a>    <span class="at">data =</span> filtered_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(location <span class="sc">==</span> <span class="st">"United States"</span> <span class="sc">&amp;</span> total_cases <span class="sc">==</span> us_cases),</span>
+<span id="cb3-39"><a href="#cb3-39"></a>    <span class="fu">aes</span>(</span>
+<span id="cb3-40"><a href="#cb3-40"></a>      <span class="at">x =</span> date, <span class="at">y =</span> total_cases,</span>
+<span id="cb3-41"><a href="#cb3-41"></a>      <span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">format</span>(us_cases, <span class="at">scientific =</span> <span class="cn">FALSE</span>, <span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>))</span>
+<span id="cb3-42"><a href="#cb3-42"></a>    ),</span>
+<span id="cb3-43"><a href="#cb3-43"></a>    <span class="at">fill =</span> <span class="st">"red"</span>,</span>
+<span id="cb3-44"><a href="#cb3-44"></a>    <span class="at">color =</span> <span class="st">"white"</span>,</span>
+<span id="cb3-45"><a href="#cb3-45"></a>    <span class="at">fontface =</span> <span class="st">"bold"</span>,</span>
+<span id="cb3-46"><a href="#cb3-46"></a>    <span class="at">label.padding =</span> <span class="fu">unit</span>(<span class="fl">0.5</span>, <span class="st">"lines"</span>),</span>
+<span id="cb3-47"><a href="#cb3-47"></a>    <span class="at">label.size =</span> <span class="fl">0.15</span>,</span>
+<span id="cb3-48"><a href="#cb3-48"></a>    <span class="at">label.r =</span> <span class="fu">unit</span>(<span class="fl">0.15</span>, <span class="st">"lines"</span>)</span>
+<span id="cb3-49"><a href="#cb3-49"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>#&gt; Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
 #&gt; ℹ Please use `linewidth` instead.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>#&gt; Warning: Removed 76 rows containing missing values (`geom_line()`).</code></pre>
 </div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -295,29 +296,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </section><section id="data-visualization-challenge-2" class="level1" data-number="2"><h1 data-number="2">
 <span class="header-section-number">2</span> Data Visualization Challenge-2</h1>
-<div class="cell" data-hash="04_data_visualization_cache/html/plots_14871c497dde978da78ede5122109808">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="do">##----.library(maps)----</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="fu">library</span>(maps)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="04_data_visualization_cache/html/plots_31155bf63389638cad5ecc66b1fb461f">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="fu">library</span>(maps)</span>
+<span id="cb5-3"><a href="#cb5-3"></a></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="do">##----1.Access the data----</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>world <span class="ot">&lt;-</span> <span class="fu">map_data</span>(<span class="st">"world"</span>)</span>
+<span id="cb5-6"><a href="#cb5-6"></a></span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="do">##----2.Read the data----</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a>covid_data_tbl <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://covid.ourworldindata.org/data/owid-covid-data.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>#&gt; 
-#&gt; Attaching package: 'maps'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>#&gt; The following object is masked from 'package:purrr':
-#&gt; 
-#&gt;     map</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="do">##----1.Access the data----</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a>world <span class="ot">&lt;-</span> <span class="fu">map_data</span>(<span class="st">"world"</span>)</span>
-<span id="cb9-3"><a href="#cb9-3"></a></span>
-<span id="cb9-4"><a href="#cb9-4"></a><span class="do">##----2.Read the COVID-19 data----</span></span>
-<span id="cb9-5"><a href="#cb9-5"></a>covid_data_tbl <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://covid.ourworldindata.org/data/owid-covid-data.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>#&gt; Rows: 311396 Columns: 67</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>#&gt; ── Column specification ────────────────────────────────────────────────────────
+<pre><code>#&gt; Rows: 311447 Columns: 67
+#&gt; ── Column specification ────────────────────────────────────────────────────────
 #&gt; Delimiter: ","
 #&gt; chr   (4): iso_code, continent, location, tests_units
 #&gt; dbl  (62): total_cases, new_cases, new_cases_smoothed, total_deaths, new_dea...
@@ -326,42 +316,44 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 #&gt; ℹ Use `spec()` to retrieve the full column specification for this data.
 #&gt; ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="do">##----3.calculation of mortality rate----</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a>plot_data <span class="ot">&lt;-</span> covid_data_tbl <span class="sc">%&gt;%</span></span>
-<span id="cb12-3"><a href="#cb12-3"></a>  <span class="fu">mutate</span>(<span class="at">location =</span> <span class="fu">case_when</span>(</span>
-<span id="cb12-4"><a href="#cb12-4"></a>    location <span class="sc">==</span> <span class="st">"United Kingdom"</span> <span class="sc">~</span> <span class="st">"UK"</span>,</span>
-<span id="cb12-5"><a href="#cb12-5"></a>    location <span class="sc">==</span> <span class="st">"United States"</span> <span class="sc">~</span> <span class="st">"USA"</span>,</span>
-<span id="cb12-6"><a href="#cb12-6"></a>    location <span class="sc">==</span> <span class="st">"Democratic Republic of Congo"</span> <span class="sc">~</span> <span class="st">"Democratic Republic of the Congo"</span>,</span>
-<span id="cb12-7"><a href="#cb12-7"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> location</span>
-<span id="cb12-8"><a href="#cb12-8"></a>  )) <span class="sc">%&gt;%</span></span>
-<span id="cb12-9"><a href="#cb12-9"></a>  <span class="fu">filter</span>(date <span class="sc">==</span> <span class="fu">as.Date</span>(<span class="st">"2021-04-16"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb12-10"><a href="#cb12-10"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(total_deaths)) <span class="sc">%&gt;%</span></span>
-<span id="cb12-11"><a href="#cb12-11"></a>  <span class="fu">group_by</span>(location) <span class="sc">%&gt;%</span></span>
-<span id="cb12-12"><a href="#cb12-12"></a>  <span class="fu">summarize</span>(<span class="at">max_total_deaths =</span> <span class="fu">max</span>(total_deaths),</span>
-<span id="cb12-13"><a href="#cb12-13"></a>            <span class="at">max_population =</span> <span class="fu">max</span>(population),</span>
-<span id="cb12-14"><a href="#cb12-14"></a>            <span class="at">mortality_rate =</span> <span class="fu">max</span>(total_deaths) <span class="sc">*</span> <span class="dv">100</span> <span class="sc">/</span> <span class="fu">max</span>(population)) <span class="sc">%&gt;%</span></span>
-<span id="cb12-15"><a href="#cb12-15"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(mortality_rate))</span>
-<span id="cb12-16"><a href="#cb12-16"></a></span>
-<span id="cb12-17"><a href="#cb12-17"></a><span class="do">##----4.Calculate total deaths worldwide because we need it in the subtitle----</span></span>
-<span id="cb12-18"><a href="#cb12-18"></a>total_deaths_worldwide_million <span class="ot">&lt;-</span> <span class="fu">sum</span>(plot_data<span class="sc">$</span>max_total_deaths)</span>
-<span id="cb12-19"><a href="#cb12-19"></a><span class="co">#Format total deaths worldwide as rounded to the nearest million</span></span>
-<span id="cb12-20"><a href="#cb12-20"></a>formatted_total_deaths_worldwide <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"Around "</span>, <span class="fu">round</span>(total_deaths_worldwide_million <span class="sc">/</span> <span class="fl">1e6</span>), <span class="st">" Million"</span>)</span>
-<span id="cb12-21"><a href="#cb12-21"></a></span>
-<span id="cb12-22"><a href="#cb12-22"></a><span class="do">##----5.Date annotation----</span></span>
-<span id="cb12-23"><a href="#cb12-23"></a>date_annotation <span class="ot">&lt;-</span> <span class="st">"Date: 04/16/2021"</span></span>
-<span id="cb12-24"><a href="#cb12-24"></a></span>
-<span id="cb12-25"><a href="#cb12-25"></a><span class="do">##----6.Plot the map----</span></span>
-<span id="cb12-26"><a href="#cb12-26"></a><span class="fu">ggplot</span>(plot_data, <span class="fu">aes</span>(<span class="at">map_id =</span> location)) <span class="sc">+</span></span>
-<span id="cb12-27"><a href="#cb12-27"></a>  <span class="fu">geom_map</span>(<span class="fu">aes</span>(<span class="at">fill =</span> mortality_rate), <span class="at">map =</span> world) <span class="sc">+</span></span>
-<span id="cb12-28"><a href="#cb12-28"></a>  <span class="fu">expand_limits</span>(<span class="at">x =</span> world<span class="sc">$</span>long, <span class="at">y =</span> world<span class="sc">$</span>lat) <span class="sc">+</span></span>
-<span id="cb12-29"><a href="#cb12-29"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"mistyrose"</span>, <span class="at">high =</span> <span class="st">"red"</span>, <span class="at">na.value =</span> <span class="st">"grey"</span>, <span class="at">breaks =</span> <span class="fu">c</span>(<span class="fl">0.20</span>, <span class="fl">0.40</span>, <span class="fl">0.60</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"0.20%"</span>, <span class="st">"0.40%"</span>, <span class="st">"0.60%"</span>)) <span class="sc">+</span></span>
-<span id="cb12-30"><a href="#cb12-30"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Confirmed COVID-19 deaths relative to the size of the population"</span>,</span>
-<span id="cb12-31"><a href="#cb12-31"></a>       <span class="at">subtitle =</span> <span class="fu">paste0</span>(formatted_total_deaths_worldwide, <span class="st">" confirmed COVID-19 deaths worldwide"</span>),</span>
-<span id="cb12-32"><a href="#cb12-32"></a>       <span class="at">fill =</span> <span class="st">"Mortality Rate"</span>) <span class="sc">+</span></span>
-<span id="cb12-33"><a href="#cb12-33"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
-<span id="cb12-34"><a href="#cb12-34"></a>  <span class="fu">annotate</span>(<span class="st">"rect"</span>, <span class="at">xmin =</span> <span class="fu">max</span>(world<span class="sc">$</span>long), <span class="at">xmax =</span> <span class="fu">max</span>(world<span class="sc">$</span>long) <span class="sc">+</span> <span class="fl">0.25</span>, <span class="at">ymin =</span> <span class="fu">min</span>(world<span class="sc">$</span>lat), <span class="at">ymax =</span> <span class="fu">min</span>(world<span class="sc">$</span>lat) <span class="sc">+</span> <span class="fl">0.25</span>, <span class="at">fill =</span> <span class="st">"darkgrey"</span>) <span class="sc">+</span></span>
-<span id="cb12-35"><a href="#cb12-35"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="fu">max</span>(world<span class="sc">$</span>long) <span class="sc">+</span> <span class="fl">0.1</span>, <span class="at">y =</span> <span class="fu">min</span>(world<span class="sc">$</span>lat) <span class="sc">+</span> <span class="fl">0.1</span>, <span class="at">label =</span> date_annotation, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">vjust =</span> <span class="dv">0</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
-<span id="cb12-36"><a href="#cb12-36"></a>  <span class="fu">theme</span>(<span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"darkgrey"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>date_to_filter <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">"2021-04-16"</span>)</span>
+<span id="cb7-2"><a href="#cb7-2"></a></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="do">##----3.Calculation of mortality rate----</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>plot_data <span class="ot">&lt;-</span> covid_data_tbl <span class="sc">%&gt;%</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>  <span class="fu">mutate</span>(<span class="at">location =</span> <span class="fu">case_when</span>(</span>
+<span id="cb7-6"><a href="#cb7-6"></a>    location <span class="sc">==</span> <span class="st">"United Kingdom"</span> <span class="sc">~</span> <span class="st">"UK"</span>,</span>
+<span id="cb7-7"><a href="#cb7-7"></a>    location <span class="sc">==</span> <span class="st">"United States"</span> <span class="sc">~</span> <span class="st">"USA"</span>,</span>
+<span id="cb7-8"><a href="#cb7-8"></a>    location <span class="sc">==</span> <span class="st">"Democratic Republic of Congo"</span> <span class="sc">~</span> <span class="st">"Democratic Republic of the Congo"</span>,</span>
+<span id="cb7-9"><a href="#cb7-9"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> location</span>
+<span id="cb7-10"><a href="#cb7-10"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb7-11"><a href="#cb7-11"></a>  <span class="fu">filter</span>(date <span class="sc">&lt;=</span> <span class="fu">as.Date</span>(<span class="st">"2022-04-19"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb7-12"><a href="#cb7-12"></a>  <span class="fu">group_by</span>(location) <span class="sc">%&gt;%</span></span>
+<span id="cb7-13"><a href="#cb7-13"></a>  <span class="fu">summarize</span>(<span class="at">deaths_on_that_date =</span> <span class="fu">sum</span>(new_deaths[date <span class="sc">&lt;=</span> <span class="fu">as.Date</span>(<span class="st">"2022-04-19"</span>)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-14"><a href="#cb7-14"></a>            <span class="at">population_on_that_date =</span> population[date <span class="sc">==</span> <span class="fu">as.Date</span>(<span class="st">"2022-04-19"</span>)],</span>
+<span id="cb7-15"><a href="#cb7-15"></a>            <span class="at">mortality_rate =</span> deaths_on_that_date <span class="sc">*</span> <span class="dv">100</span> <span class="sc">/</span> population_on_that_date)</span>
+<span id="cb7-16"><a href="#cb7-16"></a></span>
+<span id="cb7-17"><a href="#cb7-17"></a><span class="do">##----4.Calculate total deaths worldwide because we need it in the subtitle----</span></span>
+<span id="cb7-18"><a href="#cb7-18"></a>deaths_worldwide_on_that_date <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">sum</span>(plot_data<span class="sc">$</span>deaths_on_that_date, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">/</span> <span class="fl">1e6</span>)</span>
+<span id="cb7-19"><a href="#cb7-19"></a></span>
+<span id="cb7-20"><a href="#cb7-20"></a><span class="do">##----6.Plot----</span></span>
+<span id="cb7-21"><a href="#cb7-21"></a><span class="fu">ggplot</span>(plot_data, <span class="fu">aes</span>(<span class="at">map_id =</span> location)) <span class="sc">+</span></span>
+<span id="cb7-22"><a href="#cb7-22"></a>  <span class="fu">geom_map</span>(<span class="fu">aes</span>(<span class="at">fill =</span> mortality_rate), <span class="at">map =</span> world) <span class="sc">+</span></span>
+<span id="cb7-23"><a href="#cb7-23"></a>  <span class="fu">expand_limits</span>(<span class="at">x =</span> world<span class="sc">$</span>long, <span class="at">y =</span> world<span class="sc">$</span>lat) <span class="sc">+</span></span>
+<span id="cb7-24"><a href="#cb7-24"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"red"</span>, <span class="at">high =</span> <span class="st">"black"</span>, <span class="at">na.value =</span> <span class="st">"grey"</span>, <span class="at">breaks =</span> <span class="fu">c</span>(<span class="fl">0.20</span>, <span class="fl">0.40</span>, <span class="fl">0.60</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"0.20%"</span>, <span class="st">"0.40%"</span>, <span class="st">"0.60%"</span>)) <span class="sc">+</span></span>
+<span id="cb7-25"><a href="#cb7-25"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Confirmed COVID-19 deaths relative to the size of the population"</span>,</span>
+<span id="cb7-26"><a href="#cb7-26"></a>       <span class="at">subtitle =</span> <span class="fu">paste0</span>(<span class="st">"Around "</span>, deaths_worldwide_on_that_date, <span class="st">" Million"</span>, <span class="st">" confirmed COVID-19 deaths worldwide"</span>),</span>
+<span id="cb7-27"><a href="#cb7-27"></a>       <span class="at">fill =</span> <span class="st">"Mortality Rate"</span>) <span class="sc">+</span></span>
+<span id="cb7-28"><a href="#cb7-28"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb7-29"><a href="#cb7-29"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb7-30"><a href="#cb7-30"></a>    <span class="st">"text"</span>,</span>
+<span id="cb7-31"><a href="#cb7-31"></a>    <span class="at">x =</span> <span class="fu">max</span>(world<span class="sc">$</span>long) <span class="sc">-</span> <span class="dv">2</span>,</span>
+<span id="cb7-32"><a href="#cb7-32"></a>    <span class="at">y =</span> <span class="fu">min</span>(world<span class="sc">$</span>lat) <span class="sc">+</span> <span class="dv">1</span>,</span>
+<span id="cb7-33"><a href="#cb7-33"></a>    <span class="at">label =</span> <span class="st">"Date: 04/16/2021"</span>,</span>
+<span id="cb7-34"><a href="#cb7-34"></a>    <span class="at">hjust =</span> <span class="dv">1</span>,</span>
+<span id="cb7-35"><a href="#cb7-35"></a>    <span class="at">vjust =</span> <span class="dv">0</span>,</span>
+<span id="cb7-36"><a href="#cb7-36"></a>    <span class="at">size =</span> <span class="dv">4</span>,</span>
+<span id="cb7-37"><a href="#cb7-37"></a>    <span class="at">color =</span> <span class="st">"black"</span></span>
+<span id="cb7-38"><a href="#cb7-38"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure"><p><a href="04_data_visualization_files/figure-html/plots-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="04_data_visualization_files/figure-html/plots-1.png" class="img-fluid figure-img" width="960"></a></p>
@@ -620,7 +612,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","closeEffect":"zoom","selector":".lightbox","openEffect":"zoom","loop":true});</script>
+<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","loop":true,"openEffect":"zoom","selector":".lightbox","closeEffect":"zoom"});</script>
 
 
 </body></html>
