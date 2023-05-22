@@ -15,8 +15,6 @@ library(readxl)
 bikes_path <- "C:/Users/mosta/Desktop/1/ds_data/01_bike_sales/01_raw_data/bikes.xlsx"
 bikeshops_path <- "C:/Users/mosta/Desktop/1/ds_data/01_bike_sales/01_raw_data/bikeshops.xlsx"
 orderlines_path <- "C:/Users/mosta/Desktop/1/ds_data/01_bike_sales/01_raw_data/orderlines.xlsx"
-
-#Import the excel files
 bikes_tbl <- read_excel(bikes_path)
 bikeshops_tbl <- read_excel(bikeshops_path)
 orderlines_tbl <- read_excel(orderlines_path)
@@ -87,8 +85,6 @@ library(readxl)
 bikes_path <- "C:/Users/mosta/Desktop/1/ds_data/01_bike_sales/01_raw_data/bikes.xlsx"
 bikeshops_path <- "C:/Users/mosta/Desktop/1/ds_data/01_bike_sales/01_raw_data/bikeshops.xlsx"
 orderlines_path <- "C:/Users/mosta/Desktop/1/ds_data/01_bike_sales/01_raw_data/orderlines.xlsx"
-
-#Import the excel files
 bikes_tbl <- read_excel(bikes_path)
 bikeshops_tbl <- read_excel(bikeshops_path)
 orderlines_tbl <- read_excel(orderlines_path)

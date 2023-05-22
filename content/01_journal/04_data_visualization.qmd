@@ -11,70 +11,75 @@ library(tidyverse)
 library(lubridate)
 library(scales)
 
-##----1.Read the COVID-19 data----
+##----1.Read the data----
 covid_data_tbl <- read_csv("https://covid.ourworldindata.org/data/owid-covid-data.csv")
 
-##----2.Filter data for the selected countries----
-selected_countries <- c("Germany", "United Kingdom", "France", "Spain", "United States")
+##----2.Filter data for date and countries----
 filtered_data <- covid_data_tbl %>%
-  filter(location %in% selected_countries)
+  filter(location %in% c("Germany", "United Kingdom", "France", "Spain", "United States")) %>%
+  filter(date <= ymd("2022-04-19"))%>%
+  filter(!is.na(total_cases))
 
-##----3.Convert the date column to the appropriate format----
-filtered_data$date <- as.Date(filtered_data$date, format = "%Y-%m-%d")
-
-##----4.Filter data until April 19, 2022----
-filtered_data <- filtered_data %>%
-  filter(date <= ymd("2022-04-19"))
-
-##----5.Create a month-year column for grouping----
-filtered_data$month_year <- format(filtered_data$date, "%B'%y")
-
-##----6.Define the colors for each country----
+##----3.Plot----
 colors <- c("Germany" = "purple", "United Kingdom" = "green", "France" = "orange",
             "Spain" = "pink", "United States" = "yellow")
 
-##----7.Plotting----
-us_max_cases <- max(filtered_data$total_cases[filtered_data$location == "United States" & !is.na(filtered_data$total_cases)])
+us_cases <- max(filtered_data$total_cases[filtered_data$location == "United States" & !is.na(filtered_data$total_cases)])
 
 ggplot(filtered_data, aes(x = date, y = total_cases, color = location)) +
   geom_line(size = 1) +
   scale_color_manual(values = colors) +
   labs(x = "", y = "Cumulative Cases", title = "COVID-19 confirmed cases worldwide", subtitle = "As of 19/04/2022") +
-  scale_x_date(date_labels = "%B'%y", date_breaks = "1 month") +
-  scale_y_continuous(labels = function(x) paste0(format(x/1e6, scientific = FALSE), "M"),
-                     breaks = c(0, 50e6, 100e6, 150e6),
-                     limits = c(0, 150e6)) +
+  scale_x_date(
+    date_labels = "%B'%y",
+    date_breaks = "1 month",
+    labels = function(x) format(x, format = "%B'%y")
+  ) +
+  scale_y_continuous(
+    labels = function(x) paste0(format(x / 1e6, scientific = FALSE), "M"),
+    breaks = c(0, 50e6, 100e6, 150e6),
+    limits = c(0, 150e6)
+  ) +
   theme_minimal() +
-  theme(legend.position = "bottom",
-        plot.background = element_rect(fill = "darkgrey")) +
+  theme(
+    legend.position = "bottom",
+    plot.background = element_rect(fill = "darkgrey")
+  ) +
   labs(color = "Country") +
-  theme(axis.text.x = element_blank(), 
-        axis.ticks.x = element_blank()) +
-  geom_label(data = filtered_data %>% filter(location == "United States" & total_cases == us_max_cases),
-             aes(x = date, y = total_cases, 
-                 label = paste0(format(us_max_cases, scientific = FALSE, big.mark = ".", decimal.mark = ","))),
-             fill = "red", 
-             color = "white",
-             fontface = "bold",
-             label.padding = unit(0.5, "lines"),
-             label.size = 0.15,
-             label.r = unit(0.15, "lines"))
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
+    axis.ticks.x = element_blank()
+  ) +
+  geom_label(
+    data = filtered_data %>% filter(location == "United States" & total_cases == us_cases),
+    aes(
+      x = date, y = total_cases,
+      label = paste0(format(us_cases, scientific = FALSE, big.mark = ".", decimal.mark = ","))
+    ),
+    fill = "red",
+    color = "white",
+    fontface = "bold",
+    label.padding = unit(0.5, "lines"),
+    label.size = 0.15,
+    label.r = unit(0.15, "lines")
+  )
 
 ```
 
 # Data Visualization Challenge-2
 
 ```{r plots, fig.width=10, fig.height=7}
-##----.library(maps)----
 library(tidyverse)
 library(maps)
+
 ##----1.Access the data----
 world <- map_data("world")
 
-##----2.Read the COVID-19 data----
+##----2.Read the data----
 covid_data_tbl <- read_csv("https://covid.ourworldindata.org/data/owid-covid-data.csv")
+date_to_filter <- as.Date("2021-04-16")
 
-##----3.calculation of mortality rate----
+##----3.Calculation of mortality rate----
 plot_data <- covid_data_tbl %>%
   mutate(location = case_when(
     location == "United Kingdom" ~ "UK",
@@ -82,34 +87,33 @@ plot_data <- covid_data_tbl %>%
     location == "Democratic Republic of Congo" ~ "Democratic Republic of the Congo",
     TRUE ~ location
   )) %>%
-  filter(date == as.Date("2021-04-16")) %>%
-  filter(!is.na(total_deaths)) %>%
+  filter(date <= as.Date("2022-04-19")) %>%
   group_by(location) %>%
-  summarize(max_total_deaths = max(total_deaths),
-            max_population = max(population),
-            mortality_rate = max(total_deaths) * 100 / max(population)) %>%
-  filter(!is.na(mortality_rate))
+  summarize(deaths_on_that_date = sum(new_deaths[date <= as.Date("2022-04-19")], na.rm = TRUE),
+            population_on_that_date = population[date == as.Date("2022-04-19")],
+            mortality_rate = deaths_on_that_date * 100 / population_on_that_date)
 
 ##----4.Calculate total deaths worldwide because we need it in the subtitle----
-total_deaths_worldwide_million <- sum(plot_data$max_total_deaths)
-#Format total deaths worldwide as rounded to the nearest million
-formatted_total_deaths_worldwide <- paste0("Around ", round(total_deaths_worldwide_million / 1e6), " Million")
+deaths_worldwide_on_that_date <- round(sum(plot_data$deaths_on_that_date, na.rm = TRUE) / 1e6)
 
-##----5.Date annotation----
-date_annotation <- "Date: 04/16/2021"
-
-##----6.Plot the map----
+##----6.Plot----
 ggplot(plot_data, aes(map_id = location)) +
   geom_map(aes(fill = mortality_rate), map = world) +
   expand_limits(x = world$long, y = world$lat) +
-  scale_fill_gradient(low = "mistyrose", high = "red", na.value = "grey", breaks = c(0.20, 0.40, 0.60), labels = c("0.20%", "0.40%", "0.60%")) +
+  scale_fill_gradient(low = "red", high = "black", na.value = "grey", breaks = c(0.20, 0.40, 0.60), labels = c("0.20%", "0.40%", "0.60%")) +
   labs(title = "Confirmed COVID-19 deaths relative to the size of the population",
-       subtitle = paste0(formatted_total_deaths_worldwide, " confirmed COVID-19 deaths worldwide"),
+       subtitle = paste0("Around ", deaths_worldwide_on_that_date, " Million", " confirmed COVID-19 deaths worldwide"),
        fill = "Mortality Rate") +
   theme_void() +
-  annotate("rect", xmin = max(world$long), xmax = max(world$long) + 0.25, ymin = min(world$lat), ymax = min(world$lat) + 0.25, fill = "darkgrey") +
-  annotate("text", x = max(world$long) + 0.1, y = min(world$lat) + 0.1, label = date_annotation, hjust = 0, vjust = 0, size = 4, color = "white") +
-  theme(plot.background = element_rect(fill = "darkgrey"))
-
+  annotate(
+    "text",
+    x = max(world$long) - 2,
+    y = min(world$lat) + 1,
+    label = "Date: 04/16/2021",
+    hjust = 1,
+    vjust = 0,
+    size = 4,
+    color = "black"
+  )
 
 ```

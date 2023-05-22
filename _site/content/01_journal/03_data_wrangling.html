@@ -213,83 +213,76 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header><section id="data-wrangling-challenge-1" class="level1" data-number="1"><h1 data-number="1">
 <span class="header-section-number">1</span> Data Wrangling Challenge-1</h1>
-<div class="cell" data-hash="03_data_wrangling_cache/html/unnamed-chunk-1_62784b1c932aeaa2fc40500d2cd52ef6">
+<div class="cell" data-hash="03_data_wrangling_cache/html/unnamed-chunk-1_8e090fb2ebe6264a59755887abad7eed">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="do">##----.libraries----</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(data.table)</span>
 <span id="cb1-3"><a href="#cb1-3"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb1-4"><a href="#cb1-4"></a></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="do">##----1.Set the file paths----</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="do">##----1.Read and combining the data----</span></span>
 <span id="cb1-6"><a href="#cb1-6"></a>patent_assignee_file <span class="ot">&lt;-</span> <span class="st">"C:/Users/mosta/Desktop/3/Patent_data_reduced/patent_assignee.tsv"</span></span>
 <span id="cb1-7"><a href="#cb1-7"></a>assignee_file <span class="ot">&lt;-</span> <span class="st">"C:/Users/mosta/Desktop/3/Patent_data_reduced/assignee.tsv"</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a></span>
-<span id="cb1-9"><a href="#cb1-9"></a><span class="do">##----2.Read the patent_assignee data----</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a>patent_assignee_data <span class="ot">&lt;-</span> <span class="fu">fread</span>(patent_assignee_file)</span>
+<span id="cb1-8"><a href="#cb1-8"></a>patent_assignee_data <span class="ot">&lt;-</span> <span class="fu">fread</span>(patent_assignee_file)</span>
+<span id="cb1-9"><a href="#cb1-9"></a>assignee_data <span class="ot">&lt;-</span> <span class="fu">fread</span>(assignee_file)</span>
+<span id="cb1-10"><a href="#cb1-10"></a>combined_data <span class="ot">&lt;-</span> <span class="fu">merge</span>(patent_assignee_data, assignee_data, <span class="at">by.x =</span> <span class="st">"assignee_id"</span>, <span class="at">by.y =</span> <span class="st">"id"</span>)</span>
 <span id="cb1-11"><a href="#cb1-11"></a></span>
-<span id="cb1-12"><a href="#cb1-12"></a><span class="do">##----3.Read the assignee data----</span></span>
-<span id="cb1-13"><a href="#cb1-13"></a>assignee_data <span class="ot">&lt;-</span> <span class="fu">fread</span>(assignee_file)</span>
-<span id="cb1-14"><a href="#cb1-14"></a></span>
-<span id="cb1-15"><a href="#cb1-15"></a><span class="do">##----4.Join the tables----</span></span>
-<span id="cb1-16"><a href="#cb1-16"></a>combined_data <span class="ot">&lt;-</span> <span class="fu">merge</span>(patent_assignee_data, assignee_data, <span class="at">by.x =</span> <span class="st">"assignee_id"</span>, <span class="at">by.y =</span> <span class="st">"id"</span>)</span>
-<span id="cb1-17"><a href="#cb1-17"></a></span>
-<span id="cb1-18"><a href="#cb1-18"></a><span class="do">##----5.Count the number of patents granted to each US company----</span></span>
-<span id="cb1-19"><a href="#cb1-19"></a>us_company_patents <span class="ot">&lt;-</span> combined_data <span class="sc">%&gt;%</span></span>
-<span id="cb1-20"><a href="#cb1-20"></a><span class="fu">filter</span>(type <span class="sc">==</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb1-21"><a href="#cb1-21"></a><span class="fu">group_by</span>(organization) <span class="sc">%&gt;%</span></span>
-<span id="cb1-22"><a href="#cb1-22"></a><span class="fu">summarize</span>(<span class="at">patent_count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
-<span id="cb1-23"><a href="#cb1-23"></a><span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb1-24"><a href="#cb1-24"></a><span class="fu">arrange</span>(<span class="fu">desc</span>(patent_count))</span>
-<span id="cb1-25"><a href="#cb1-25"></a></span>
-<span id="cb1-26"><a href="#cb1-26"></a><span class="co">#----6.List the top 10 US companies with the most new granted patents----</span></span>
-<span id="cb1-27"><a href="#cb1-27"></a>top_10_companies <span class="ot">&lt;-</span> <span class="fu">head</span>(us_company_patents, <span class="dv">10</span>)</span>
-<span id="cb1-28"><a href="#cb1-28"></a>top_10_companies</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-
-<div data-pagedtable="false">
-  <script data-pagedtable-source="" type="application/json">
-{"columns":[{"label":["organization"],"name":[1],"type":["chr"],"align":["left"]},{"label":["patent_count"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"International Business Machines Corporation","2":"7547"},{"1":"Microsoft Corporation","2":"3165"},{"1":"Google Inc.","2":"2668"},{"1":"QUALCOMM Incorporated","2":"2597"},{"1":"Apple Inc.","2":"2201"},{"1":"General Electric Company","2":"1873"},{"1":"Hewlett-Packard Development Company, L.P.","2":"1638"},{"1":"AT&T INTELLECTUAL PROPERTY I, L.P.","2":"1625"},{"1":"Intel Corporation","2":"1616"},{"1":"GM Global Technology Operations LLC","2":"1533"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
+<span id="cb1-12"><a href="#cb1-12"></a><span class="do">##----2.Count the number of patents granted to each US company----</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a>us_company_patents <span class="ot">&lt;-</span> combined_data <span class="sc">%&gt;%</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-15"><a href="#cb1-15"></a>  <span class="fu">group_by</span>(organization) <span class="sc">%&gt;%</span></span>
+<span id="cb1-16"><a href="#cb1-16"></a>  <span class="fu">summarize</span>(<span class="at">patent_count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb1-18"><a href="#cb1-18"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(patent_count))</span>
+<span id="cb1-19"><a href="#cb1-19"></a></span>
+<span id="cb1-20"><a href="#cb1-20"></a><span class="co">#----3.List the top 10 US companies with the most new granted patents----</span></span>
+<span id="cb1-21"><a href="#cb1-21"></a>top_10_companies <span class="ot">&lt;-</span> <span class="fu">head</span>(us_company_patents, <span class="dv">10</span>)</span>
+<span id="cb1-22"><a href="#cb1-22"></a><span class="fu">print</span>(top_10_companies)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; # A tibble: 10 × 2
+#&gt;    organization                                patent_count
+#&gt;    &lt;chr&gt;                                              &lt;int&gt;
+#&gt;  1 International Business Machines Corporation         7547
+#&gt;  2 Microsoft Corporation                               3165
+#&gt;  3 Google Inc.                                         2668
+#&gt;  4 QUALCOMM Incorporated                               2597
+#&gt;  5 Apple Inc.                                          2201
+#&gt;  6 General Electric Company                            1873
+#&gt;  7 Hewlett-Packard Development Company, L.P.           1638
+#&gt;  8 AT&amp;T INTELLECTUAL PROPERTY I, L.P.                  1625
+#&gt;  9 Intel Corporation                                   1616
+#&gt; 10 GM Global Technology Operations LLC                 1533</code></pre>
 </div>
 </div>
 </section><section id="data-wrangling-challenge-2" class="level1" data-number="2"><h1 data-number="2">
 <span class="header-section-number">2</span> Data Wrangling Challenge-2</h1>
-<div class="cell" data-hash="03_data_wrangling_cache/html/unnamed-chunk-2_a0e886008a86becbbd518191dd3daf6f">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="do">##----.libraries----</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="fu">library</span>(data.table)</span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb2-4"><a href="#cb2-4"></a></span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="do">##----1.Set the file paths----</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a>patent_file <span class="ot">&lt;-</span> <span class="st">"C:/Users/mosta/Desktop/3/Patent_data_reduced/patent.tsv"</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a>patent_assignee_file <span class="ot">&lt;-</span> <span class="st">"C:/Users/mosta/Desktop/3/Patent_data_reduced/patent_assignee.tsv"</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a>assignee_file <span class="ot">&lt;-</span> <span class="st">"C:/Users/mosta/Desktop/3/Patent_data_reduced/assignee.tsv"</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a></span>
-<span id="cb2-10"><a href="#cb2-10"></a><span class="do">##----2.Read the patent data----</span></span>
-<span id="cb2-11"><a href="#cb2-11"></a>patent_data <span class="ot">&lt;-</span> <span class="fu">fread</span>(patent_file)</span>
-<span id="cb2-12"><a href="#cb2-12"></a></span>
-<span id="cb2-13"><a href="#cb2-13"></a><span class="do">##----3.Filter the patent data for August 2014----</span></span>
-<span id="cb2-14"><a href="#cb2-14"></a>august_patents <span class="ot">&lt;-</span> patent_data[<span class="fu">month</span>(date) <span class="sc">==</span> <span class="dv">8</span> <span class="sc">&amp;</span> <span class="fu">year</span>(date) <span class="sc">==</span> <span class="dv">2014</span>]</span>
-<span id="cb2-15"><a href="#cb2-15"></a></span>
-<span id="cb2-16"><a href="#cb2-16"></a><span class="do">##----4.Read the patent_assignee data----</span></span>
-<span id="cb2-17"><a href="#cb2-17"></a>patent_assignee_data <span class="ot">&lt;-</span> <span class="fu">fread</span>(patent_assignee_file)</span>
-<span id="cb2-18"><a href="#cb2-18"></a></span>
-<span id="cb2-19"><a href="#cb2-19"></a><span class="do">##----5.Read the assignee data----</span></span>
-<span id="cb2-20"><a href="#cb2-20"></a>assignee_data <span class="ot">&lt;-</span> <span class="fu">fread</span>(assignee_file)</span>
-<span id="cb2-21"><a href="#cb2-21"></a></span>
-<span id="cb2-22"><a href="#cb2-22"></a><span class="do">##----6.Join the tables to get the assignee information for August 2014 patents----</span></span>
-<span id="cb2-23"><a href="#cb2-23"></a>combined_data <span class="ot">&lt;-</span> <span class="fu">merge</span>(<span class="fu">merge</span>(august_patents, patent_assignee_data, <span class="at">by.x =</span> <span class="st">"id"</span>, <span class="at">by.y =</span> <span class="st">"patent_id"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb2-24"><a href="#cb2-24"></a>                       assignee_data, <span class="at">by.x =</span> <span class="st">"assignee_id"</span>, <span class="at">by.y =</span> <span class="st">"id"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb2-25"><a href="#cb2-25"></a></span>
-<span id="cb2-26"><a href="#cb2-26"></a><span class="do">##----7.Count the number of patents granted to each US company in August 2014----</span></span>
-<span id="cb2-27"><a href="#cb2-27"></a>us_company_patents <span class="ot">&lt;-</span> combined_data <span class="sc">%&gt;%</span></span>
-<span id="cb2-28"><a href="#cb2-28"></a><span class="fu">filter</span>(type <span class="sc">==</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-29"><a href="#cb2-29"></a><span class="fu">group_by</span>(organization) <span class="sc">%&gt;%</span></span>
-<span id="cb2-30"><a href="#cb2-30"></a><span class="fu">summarize</span>(<span class="at">patent_count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
-<span id="cb2-31"><a href="#cb2-31"></a><span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb2-32"><a href="#cb2-32"></a><span class="fu">arrange</span>(<span class="fu">desc</span>(patent_count))</span>
-<span id="cb2-33"><a href="#cb2-33"></a></span>
-<span id="cb2-34"><a href="#cb2-34"></a><span class="co">#----8.List the top 10 US companies with the most new granted patents for August 2014----</span></span>
-<span id="cb2-35"><a href="#cb2-35"></a>top_10_companies <span class="ot">&lt;-</span> <span class="fu">head</span>(us_company_patents, <span class="dv">10</span>)</span>
-<span id="cb2-36"><a href="#cb2-36"></a>top_10_companies</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="03_data_wrangling_cache/html/unnamed-chunk-2_b8302a6a1cd002719b1acd9323c5aa11">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="do">##----.libraries----</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="do">##----1.Read the data----</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>patent_file <span class="ot">&lt;-</span> <span class="st">"C:/Users/mosta/Desktop/3/Patent_data_reduced/patent.tsv"</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>patent_assignee_file <span class="ot">&lt;-</span> <span class="st">"C:/Users/mosta/Desktop/3/Patent_data_reduced/patent_assignee.tsv"</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>assignee_file <span class="ot">&lt;-</span> <span class="st">"C:/Users/mosta/Desktop/3/Patent_data_reduced/assignee.tsv"</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>patent_data <span class="ot">&lt;-</span> <span class="fu">fread</span>(patent_file)</span>
+<span id="cb3-10"><a href="#cb3-10"></a>patent_assignee_data <span class="ot">&lt;-</span> <span class="fu">fread</span>(patent_assignee_file)</span>
+<span id="cb3-11"><a href="#cb3-11"></a>assignee_data <span class="ot">&lt;-</span> <span class="fu">fread</span>(assignee_file)</span>
+<span id="cb3-12"><a href="#cb3-12"></a></span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="do">##----2.Jcombine and filter the data to get the assignee information for August 2014 patents----</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a>august_patents <span class="ot">&lt;-</span> patent_data[<span class="fu">month</span>(date) <span class="sc">==</span> <span class="dv">8</span> <span class="sc">&amp;</span> <span class="fu">year</span>(date) <span class="sc">==</span> <span class="dv">2014</span>]</span>
+<span id="cb3-15"><a href="#cb3-15"></a>combined_data <span class="ot">&lt;-</span> <span class="fu">merge</span>(<span class="fu">merge</span>(august_patents, patent_assignee_data, <span class="at">by.x =</span> <span class="st">"id"</span>, <span class="at">by.y =</span> <span class="st">"patent_id"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb3-16"><a href="#cb3-16"></a>                       assignee_data, <span class="at">by.x =</span> <span class="st">"assignee_id"</span>, <span class="at">by.y =</span> <span class="st">"id"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-17"><a href="#cb3-17"></a></span>
+<span id="cb3-18"><a href="#cb3-18"></a><span class="do">##----3.Count the number of patents granted to each US company in August 2014----</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a>us_company_patents <span class="ot">&lt;-</span> combined_data <span class="sc">%&gt;%</span></span>
+<span id="cb3-20"><a href="#cb3-20"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-21"><a href="#cb3-21"></a>  <span class="fu">group_by</span>(organization) <span class="sc">%&gt;%</span></span>
+<span id="cb3-22"><a href="#cb3-22"></a>  <span class="fu">summarize</span>(<span class="at">patent_count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb3-23"><a href="#cb3-23"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb3-24"><a href="#cb3-24"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(patent_count))</span>
+<span id="cb3-25"><a href="#cb3-25"></a></span>
+<span id="cb3-26"><a href="#cb3-26"></a><span class="co">#----4.List the top 10 US companies with the most new granted patents for August 2014----</span></span>
+<span id="cb3-27"><a href="#cb3-27"></a>top_10_companies <span class="ot">&lt;-</span> <span class="fu">head</span>(us_company_patents, <span class="dv">10</span>)</span>
+<span id="cb3-28"><a href="#cb3-28"></a>top_10_companies</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 
 <div data-pagedtable="false">
@@ -301,40 +294,31 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </section><section id="data-wrangling-challenge-3" class="level1" data-number="3"><h1 data-number="3">
 <span class="header-section-number">3</span> Data Wrangling Challenge-3</h1>
-<div class="cell" data-hash="03_data_wrangling_cache/html/unnamed-chunk-3_2e2c9fd1217b7df90ef54ae7961c39df">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="do">##3</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="do">##----.libraries----</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="fu">library</span>(data.table)</span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb3-5"><a href="#cb3-5"></a></span>
-<span id="cb3-6"><a href="#cb3-6"></a><span class="do">##----1.Set the file paths----</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a>patent_assignee_file <span class="ot">&lt;-</span> <span class="st">"C:/Users/mosta/Desktop/3/Patent_data_reduced/patent_assignee.tsv"</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a>assignee_file <span class="ot">&lt;-</span> <span class="st">"C:/Users/mosta/Desktop/3/Patent_data_reduced/assignee.tsv"</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a>uspc_file <span class="ot">&lt;-</span> <span class="st">"C:/Users/mosta/Desktop/3/Patent_data_reduced/uspc.tsv"</span></span>
-<span id="cb3-10"><a href="#cb3-10"></a></span>
-<span id="cb3-11"><a href="#cb3-11"></a><span class="do">##----2.Read the patent_assignee data----</span></span>
-<span id="cb3-12"><a href="#cb3-12"></a>patent_assignee_data <span class="ot">&lt;-</span> <span class="fu">fread</span>(patent_assignee_file)</span>
-<span id="cb3-13"><a href="#cb3-13"></a></span>
-<span id="cb3-14"><a href="#cb3-14"></a><span class="do">##----3.Read the assignee data----</span></span>
-<span id="cb3-15"><a href="#cb3-15"></a>assignee_data <span class="ot">&lt;-</span> <span class="fu">fread</span>(assignee_file)</span>
-<span id="cb3-16"><a href="#cb3-16"></a></span>
-<span id="cb3-17"><a href="#cb3-17"></a><span class="do">##----4.Read the uspc data----</span></span>
-<span id="cb3-18"><a href="#cb3-18"></a>uspc_data <span class="ot">&lt;-</span> <span class="fu">fread</span>(uspc_file)</span>
-<span id="cb3-19"><a href="#cb3-19"></a></span>
-<span id="cb3-20"><a href="#cb3-20"></a><span class="do">##----5.Join the tables----</span></span>
-<span id="cb3-21"><a href="#cb3-21"></a>combined_data <span class="ot">&lt;-</span> <span class="fu">merge</span>(patent_assignee_data, assignee_data, <span class="at">by.x =</span> <span class="st">"assignee_id"</span>, <span class="at">by.y =</span> <span class="st">"id"</span>)</span>
-<span id="cb3-22"><a href="#cb3-22"></a></span>
-<span id="cb3-23"><a href="#cb3-23"></a><span class="do">##----6.Count the number of patents granted to each company worldwide----</span></span>
-<span id="cb3-24"><a href="#cb3-24"></a>company_patents <span class="ot">&lt;-</span> combined_data <span class="sc">%&gt;%</span></span>
-<span id="cb3-25"><a href="#cb3-25"></a><span class="fu">filter</span>(<span class="sc">!</span>(<span class="fu">is.na</span>(organization))) <span class="sc">%&gt;%</span></span>
-<span id="cb3-26"><a href="#cb3-26"></a><span class="fu">group_by</span>(organization) <span class="sc">%&gt;%</span></span>
-<span id="cb3-27"><a href="#cb3-27"></a><span class="fu">summarize</span>(<span class="at">patent_count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
-<span id="cb3-28"><a href="#cb3-28"></a><span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb3-29"><a href="#cb3-29"></a><span class="fu">arrange</span>(<span class="fu">desc</span>(patent_count))</span>
-<span id="cb3-30"><a href="#cb3-30"></a></span>
-<span id="cb3-31"><a href="#cb3-31"></a><span class="do">##----7.Get the top 10 companies with the most patents----</span></span>
-<span id="cb3-32"><a href="#cb3-32"></a>top_10_companies <span class="ot">&lt;-</span> <span class="fu">head</span>(company_patents, <span class="dv">10</span>)<span class="sc">$</span>organization</span>
-<span id="cb3-33"><a href="#cb3-33"></a>top_10_companies</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="03_data_wrangling_cache/html/unnamed-chunk-3_b36fdf355840b43a7cdac3f7df4972a4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="do">##----.libraries----</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb4-4"><a href="#cb4-4"></a></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="do">##----1.Read and combine the data----</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a>patent_assignee_file <span class="ot">&lt;-</span> <span class="st">"C:/Users/mosta/Desktop/3/Patent_data_reduced/patent_assignee.tsv"</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>assignee_file <span class="ot">&lt;-</span> <span class="st">"C:/Users/mosta/Desktop/3/Patent_data_reduced/assignee.tsv"</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a>uspc_file <span class="ot">&lt;-</span> <span class="st">"C:/Users/mosta/Desktop/3/Patent_data_reduced/uspc.tsv"</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a>patent_assignee_data <span class="ot">&lt;-</span> <span class="fu">fread</span>(patent_assignee_file)</span>
+<span id="cb4-10"><a href="#cb4-10"></a>assignee_data <span class="ot">&lt;-</span> <span class="fu">fread</span>(assignee_file)</span>
+<span id="cb4-11"><a href="#cb4-11"></a>uspc_data <span class="ot">&lt;-</span> <span class="fu">fread</span>(uspc_file)</span>
+<span id="cb4-12"><a href="#cb4-12"></a>combined_data <span class="ot">&lt;-</span> <span class="fu">merge</span>(patent_assignee_data, assignee_data, <span class="at">by.x =</span> <span class="st">"assignee_id"</span>, <span class="at">by.y =</span> <span class="st">"id"</span>)</span>
+<span id="cb4-13"><a href="#cb4-13"></a></span>
+<span id="cb4-14"><a href="#cb4-14"></a><span class="do">##----2.Count the number of patents granted to each company worldwide----</span></span>
+<span id="cb4-15"><a href="#cb4-15"></a>company_patents <span class="ot">&lt;-</span> combined_data <span class="sc">%&gt;%</span></span>
+<span id="cb4-16"><a href="#cb4-16"></a><span class="fu">filter</span>(<span class="sc">!</span>(<span class="fu">is.na</span>(organization))) <span class="sc">%&gt;%</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a><span class="fu">group_by</span>(organization) <span class="sc">%&gt;%</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a><span class="fu">summarize</span>(<span class="at">patent_count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb4-19"><a href="#cb4-19"></a><span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb4-20"><a href="#cb4-20"></a><span class="fu">arrange</span>(<span class="fu">desc</span>(patent_count))</span>
+<span id="cb4-21"><a href="#cb4-21"></a></span>
+<span id="cb4-22"><a href="#cb4-22"></a><span class="do">##----3.The top 10 companies with the most patents----</span></span>
+<span id="cb4-23"><a href="#cb4-23"></a>top_10_companies <span class="ot">&lt;-</span> <span class="fu">head</span>(company_patents, <span class="dv">10</span>)<span class="sc">$</span>organization</span>
+<span id="cb4-24"><a href="#cb4-24"></a>top_10_companies</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#&gt;  [1] "International Business Machines Corporation"
 #&gt;  [2] "Samsung Electronics Co., Ltd."              
@@ -347,25 +331,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 #&gt;  [9] "LG Electronics Inc."                        
 #&gt; [10] "Panasonic Corporation"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="do">##----8.Filter the combined_data for the top 10 companies----</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>filtered_data <span class="ot">&lt;-</span> combined_data[organization <span class="sc">%in%</span> top_10_companies]</span>
-<span id="cb5-3"><a href="#cb5-3"></a></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="do">##----9.Join the filtered_data with the uspc table----</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a>filtered_uspc <span class="ot">&lt;-</span> <span class="fu">merge</span>(filtered_data, uspc_data, <span class="at">by.x =</span> <span class="st">"patent_id"</span>, <span class="at">by.y =</span> <span class="st">"patent_id"</span>)</span>
-<span id="cb5-6"><a href="#cb5-6"></a></span>
-<span id="cb5-7"><a href="#cb5-7"></a><span class="do">##----10.Count the occurrences of each main class for the top companies----</span></span>
-<span id="cb5-8"><a href="#cb5-8"></a>top_main_classes <span class="ot">&lt;-</span> filtered_uspc <span class="sc">%&gt;%</span></span>
-<span id="cb5-9"><a href="#cb5-9"></a>  <span class="fu">group_by</span>(mainclass_id) <span class="sc">%&gt;%</span></span>
-<span id="cb5-10"><a href="#cb5-10"></a>  <span class="fu">summarize</span>(<span class="at">number_of_incidents =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
-<span id="cb5-11"><a href="#cb5-11"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(number_of_incidents)) <span class="sc">%&gt;%</span></span>
-<span id="cb5-12"><a href="#cb5-12"></a>  <span class="fu">head</span>(<span class="dv">5</span>)</span>
-<span id="cb5-13"><a href="#cb5-13"></a></span>
-<span id="cb5-14"><a href="#cb5-14"></a>top_main_classes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="do">##----4.Filter the combined_data for the top 10 companies----</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>filtered_data <span class="ot">&lt;-</span> combined_data[organization <span class="sc">%in%</span> top_10_companies]</span>
+<span id="cb6-3"><a href="#cb6-3"></a></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="do">##----5.Join the filtered_data with the uspc table----</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>filtered_uspc <span class="ot">&lt;-</span> <span class="fu">merge</span>(filtered_data, uspc_data, <span class="at">by.x =</span> <span class="st">"patent_id"</span>, <span class="at">by.y =</span> <span class="st">"patent_id"</span>)</span>
+<span id="cb6-6"><a href="#cb6-6"></a></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="do">##----6.Count the occurrences of each main class for the top companies----</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a>top_main_classes <span class="ot">&lt;-</span> filtered_uspc <span class="sc">%&gt;%</span></span>
+<span id="cb6-9"><a href="#cb6-9"></a>  <span class="fu">group_by</span>(mainclass_id) <span class="sc">%&gt;%</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a>  <span class="fu">summarize</span>(<span class="at">occurrences =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(occurrences)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-12"><a href="#cb6-12"></a>  <span class="fu">head</span>(<span class="dv">5</span>)</span>
+<span id="cb6-13"><a href="#cb6-13"></a></span>
+<span id="cb6-14"><a href="#cb6-14"></a>top_main_classes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
-{"columns":[{"label":["mainclass_id"],"name":[1],"type":["chr"],"align":["left"]},{"label":["number_of_incidents"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"257","2":"7979"},{"1":"455","2":"6191"},{"1":"370","2":"5483"},{"1":"348","2":"4113"},{"1":"709","2":"4018"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["mainclass_id"],"name":[1],"type":["chr"],"align":["left"]},{"label":["occurrences"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"257","2":"7979"},{"1":"455","2":"6191"},{"1":"370","2":"5483"},{"1":"348","2":"4113"},{"1":"709","2":"4018"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 </div>
