@@ -6,4 +6,4 @@ author: "Sarvenaz Mostafazadeh"
 
 ![](assets/logo/TIE_logo.svg){width=80% fig-align="center"}
 
-Hi! In my website you will see the codes for the course "Business Data Science Basics"! :)
+Hi! In this website you will see the codes for the course "Business Data Science Basics"! :)
