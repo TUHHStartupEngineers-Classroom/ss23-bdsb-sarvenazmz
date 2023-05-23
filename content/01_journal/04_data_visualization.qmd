@@ -88,7 +88,7 @@ plot_data <- covid_data_tbl %>%
     TRUE ~ location
   )) %>%
   filter(date <= as.Date("2022-04-19")) %>%
-  filter(!(is.na(continent)))%>%
+  filter(!(is.na(continent))) %>%
   group_by(location) %>%
   summarize(deaths_on_that_date = sum(new_deaths[date <= as.Date("2022-04-19")], na.rm = TRUE),
             population_on_that_date = population[date == as.Date("2022-04-19")],
@@ -97,11 +97,19 @@ plot_data <- covid_data_tbl %>%
 ##----4.Calculate total deaths worldwide because we need it in the subtitle----
 deaths_worldwide_on_that_date <- round(sum(plot_data$deaths_on_that_date, na.rm = TRUE) / 1e6, digits = 1)
 
+##----5.Add missing regions from the plot to be shown as the gray part (for example Antarctica) to the data----
+missing_regions <- world$region[!(world$region %in% plot_data$location)]
+missing_data <- tibble(location = missing_regions,
+                       deaths_on_that_date = NA,
+                       population_on_that_date = NA,
+                       mortality_rate = NA)
+plot_data <- bind_rows(plot_data, missing_data)
+
 ##----6.Plot----
 ggplot(plot_data, aes(map_id = location)) +
   geom_map(aes(fill = mortality_rate), map = world) +
   expand_limits(x = world$long, y = world$lat) +
-  scale_fill_gradient(low = "red", high = "black", na.value = "grey", breaks = c(0.20, 0.40, 0.60), labels = c("0.20%", "0.40%", "0.60%")) +
+  scale_fill_gradient(low = "red", high = "black", na.value = "gray", breaks = c(0.20, 0.40, 0.60), labels = c("0.20%", "0.40%", "0.60%")) +
   labs(title = "Confirmed COVID-19 deaths relative to the size of the population",
        subtitle = paste0("Around ", deaths_worldwide_on_that_date, " Million", " confirmed COVID-19 deaths worldwide"),
        fill = "Mortality Rate") +
@@ -116,6 +124,5 @@ ggplot(plot_data, aes(map_id = location)) +
     size = 4,
     color = "black"
   )
-
 
 ```
