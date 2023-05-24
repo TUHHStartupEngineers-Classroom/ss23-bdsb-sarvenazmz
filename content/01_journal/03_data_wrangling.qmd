@@ -1,8 +1,113 @@
 ---
 title: "Data Wrangling"
-author: "Joschka Schwarz"
+author: "Sarvenaz Mostafazadeh"
 ---
 
-::: callout-note
-You can delete everything in here and start fresh.
-:::
+# Data Wrangling Challenge-1
+
+```{r}
+##----.libraries----
+library(data.table)
+library(dplyr)
+
+##----1.Read and combining the data----
+patent_assignee_file <- "C:/Users/mosta/Desktop/3/Patent_data_reduced/patent_assignee.tsv"
+assignee_file <- "C:/Users/mosta/Desktop/3/Patent_data_reduced/assignee.tsv"
+patent_assignee_data <- fread(patent_assignee_file)
+assignee_data <- fread(assignee_file)
+combined_data <- merge(patent_assignee_data, assignee_data, by.x = "assignee_id", by.y = "id")
+
+##----2.Count the number of patents granted to each US company----
+us_company_patents <- combined_data %>%
+  filter(type == 2) %>%
+  group_by(organization) %>%
+  summarize(patent_count = n()) %>%
+  ungroup() %>%
+  arrange(desc(patent_count))
+
+#----3.List the top 10 US companies with the most new granted patents----
+top_10_companies <- head(us_company_patents, 10)
+print(top_10_companies)
+
+
+```
+
+# Data Wrangling Challenge-2
+
+```{r}
+##----.libraries----
+library(data.table)
+library(dplyr)
+
+##----1.Read the data----
+patent_file <- "C:/Users/mosta/Desktop/3/Patent_data_reduced/patent.tsv"
+patent_assignee_file <- "C:/Users/mosta/Desktop/3/Patent_data_reduced/patent_assignee.tsv"
+assignee_file <- "C:/Users/mosta/Desktop/3/Patent_data_reduced/assignee.tsv"
+patent_data <- fread(patent_file)
+patent_assignee_data <- fread(patent_assignee_file)
+assignee_data <- fread(assignee_file)
+
+##----2.Jcombine and filter the data to get the assignee information for August 2014 patents----
+august_patents <- patent_data[month(date) == 8 & year(date) == 2014]
+combined_data <- merge(merge(august_patents, patent_assignee_data, by.x = "id", by.y = "patent_id", all.x = TRUE),
+                       assignee_data, by.x = "assignee_id", by.y = "id", all.x = TRUE)
+
+##----3.Count the number of patents granted to each US company in August 2014----
+us_company_patents <- combined_data %>%
+  filter(type == 2) %>%
+  group_by(organization) %>%
+  summarize(patent_count = n()) %>%
+  ungroup() %>%
+  arrange(desc(patent_count))
+
+#----4.List the top 10 US companies with the most new granted patents for August 2014----
+top_10_companies <- head(us_company_patents, 10)
+top_10_companies
+
+```
+
+# Data Wrangling Challenge-3
+
+```{r}
+##----.libraries----
+library(data.table)
+library(dplyr)
+
+##----1.Read and combine the data----
+patent_assignee_file <- "C:/Users/mosta/Desktop/3/Patent_data_reduced/patent_assignee.tsv"
+assignee_file <- "C:/Users/mosta/Desktop/3/Patent_data_reduced/assignee.tsv"
+uspc_file <- "C:/Users/mosta/Desktop/3/Patent_data_reduced/uspc.tsv"
+patent_assignee_data <- fread(patent_assignee_file)
+assignee_data <- fread(assignee_file)
+uspc_data <- fread(uspc_file)
+combined_data <- merge(patent_assignee_data, assignee_data, by.x = "assignee_id", by.y = "id")
+
+##----2.Count the number of patents granted to each company worldwide----
+company_patents <- combined_data %>%
+filter(!(is.na(organization))) %>%
+group_by(organization) %>%
+summarize(patent_count = n()) %>%
+ungroup() %>%
+arrange(desc(patent_count))
+
+##----3.The top 10 companies with the most patents----
+top_10_companies <- head(company_patents, 10)$organization
+top_10_companies
+
+##----4.Filter the combined_data for the top 10 companies----
+filtered_data <- combined_data[organization %in% top_10_companies]
+
+##----5.Join the filtered_data with the uspc table----
+filtered_uspc <- merge(filtered_data, uspc_data, by.x = "patent_id", by.y = "patent_id")
+
+##----6.Count the occurrences of each main class for the top companies----
+top_main_classes <- filtered_uspc %>%
+  group_by(mainclass_id) %>%
+  summarize(occurrences = n()) %>%
+  arrange(desc(occurrences)) %>%
+  head(5)
+
+top_main_classes
+
+
+```
