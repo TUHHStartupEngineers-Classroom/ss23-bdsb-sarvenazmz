@@ -77,7 +77,7 @@ world <- map_data("world")
 
 ##----2.Read the data----
 covid_data_tbl <- read_csv("https://covid.ourworldindata.org/data/owid-covid-data.csv")
-date_to_filter <- as.Date("2021-04-16")
+date_to_filter <- as.Date("2022-04-16")
 
 ##----3.Calculation of mortality rate----
 plot_data <- covid_data_tbl %>%
@@ -118,7 +118,7 @@ ggplot(plot_data, aes(map_id = location)) +
     "text",
     x = max(world$long) - 2,
     y = min(world$lat) + 1,
-    label = "Date: 04/16/2021",
+    label = "Date: 04/16/2022",
     hjust = 1,
     vjust = 0,
     size = 4,

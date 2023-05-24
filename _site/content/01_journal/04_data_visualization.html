@@ -296,7 +296,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </section><section id="data-visualization-challenge-2" class="level1" data-number="2"><h1 data-number="2">
 <span class="header-section-number">2</span> Data Visualization Challenge-2</h1>
-<div class="cell" data-hash="04_data_visualization_cache/html/plots_3a2caa6a9ae571732e92ceb50b089ee3">
+<div class="cell" data-hash="04_data_visualization_cache/html/plots_adaad4c7f062772f1da99289eb2177b3">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb5-2"><a href="#cb5-2"></a><span class="fu">library</span>(maps)</span>
 <span id="cb5-3"><a href="#cb5-3"></a></span>
@@ -306,7 +306,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-7"><a href="#cb5-7"></a><span class="do">##----2.Read the data----</span></span>
 <span id="cb5-8"><a href="#cb5-8"></a>covid_data_tbl <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://covid.ourworldindata.org/data/owid-covid-data.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>#&gt; Rows: 311451 Columns: 67
+<pre><code>#&gt; Rows: 311568 Columns: 67
 #&gt; ── Column specification ────────────────────────────────────────────────────────
 #&gt; Delimiter: ","
 #&gt; chr   (4): iso_code, continent, location, tests_units
@@ -316,7 +316,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 #&gt; ℹ Use `spec()` to retrieve the full column specification for this data.
 #&gt; ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>date_to_filter <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">"2021-04-16"</span>)</span>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>date_to_filter <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">"2022-04-16"</span>)</span>
 <span id="cb7-2"><a href="#cb7-2"></a></span>
 <span id="cb7-3"><a href="#cb7-3"></a><span class="do">##----3.Calculation of mortality rate----</span></span>
 <span id="cb7-4"><a href="#cb7-4"></a>plot_data <span class="ot">&lt;-</span> covid_data_tbl <span class="sc">%&gt;%</span></span>
@@ -357,7 +357,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-39"><a href="#cb7-39"></a>    <span class="st">"text"</span>,</span>
 <span id="cb7-40"><a href="#cb7-40"></a>    <span class="at">x =</span> <span class="fu">max</span>(world<span class="sc">$</span>long) <span class="sc">-</span> <span class="dv">2</span>,</span>
 <span id="cb7-41"><a href="#cb7-41"></a>    <span class="at">y =</span> <span class="fu">min</span>(world<span class="sc">$</span>lat) <span class="sc">+</span> <span class="dv">1</span>,</span>
-<span id="cb7-42"><a href="#cb7-42"></a>    <span class="at">label =</span> <span class="st">"Date: 04/16/2021"</span>,</span>
+<span id="cb7-42"><a href="#cb7-42"></a>    <span class="at">label =</span> <span class="st">"Date: 04/16/2022"</span>,</span>
 <span id="cb7-43"><a href="#cb7-43"></a>    <span class="at">hjust =</span> <span class="dv">1</span>,</span>
 <span id="cb7-44"><a href="#cb7-44"></a>    <span class="at">vjust =</span> <span class="dv">0</span>,</span>
 <span id="cb7-45"><a href="#cb7-45"></a>    <span class="at">size =</span> <span class="dv">4</span>,</span>
@@ -621,7 +621,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","descPosition":"bottom","closeEffect":"zoom","loop":true,"openEffect":"zoom"});</script>
+<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","openEffect":"zoom","selector":".lightbox","closeEffect":"zoom","loop":true});</script>
 
 
 </body></html>
